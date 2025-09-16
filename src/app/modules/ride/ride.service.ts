@@ -3,6 +3,7 @@ import AppError from "../../errorHelpers/AppError";
 import { Ride } from "./ride.model";
 import { IRide, RideStatus } from "./ride.initerface";
 
+// Rider request a ride
 const requestSendByRider = async (payload: Partial<IRide>, riderId: string) => {
   const requesteRide = await Ride.create({
     riderId: riderId,
@@ -13,6 +14,7 @@ const requestSendByRider = async (payload: Partial<IRide>, riderId: string) => {
   return requesteRide;
 };
 
+//  Rider  cancel a ride
 const cancelRequestByRider = async (userId: string, rideId: string) => {
   const ride = await Ride.findById(rideId);
   if (!ride) {
@@ -35,7 +37,22 @@ const cancelRequestByRider = async (userId: string, rideId: string) => {
   return ride;
 };
 
+// Rider get all rider herself
+
+const getMyRides = async (riderId: string) => {
+  const rides = await Ride.find({ riderId }).populate("driverId", "name email");
+  const totalRides = await Ride.countDocuments();
+  console.log(rides, "serv-43");
+  return {
+    rides,
+    meta: {
+      total: totalRides,
+    },
+  };
+};
+
 export const RideServices = {
   requestSendByRider,
   cancelRequestByRider,
+  getMyRides,
 };
