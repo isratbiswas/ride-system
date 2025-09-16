@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser>(
     },
     isBlocked: { type: Boolean, default: false },
     phone: { type: String },
-    isVerified: { type: Boolean, default: false },
+    isVerified: { type: Boolean, default: true },
     auths: [authProviderSchema],
   },
 

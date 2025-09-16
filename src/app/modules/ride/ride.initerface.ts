@@ -1,17 +1,21 @@
 import { Document, Schema, Types } from "mongoose";
 
-export type TRideStatus =
-  | "requested"
-  | "accepted"
-  | "rejected"
-  | "picked_up"
-  | "in_transit"
-  | "completed"
-  | "cancelled";
+export enum RideStatus {
+  requested = "requested",
+  accepted = "accepted",
+  cancelled = "cancelled",
+}
+// |
+// |
+// | "rejected"
+// | "picked_up"
+// | "in_transit"
+// | "completed"
+// |
 
 export interface IRide extends Document {
-  rider: Types.ObjectId;
-  driver?: Types.ObjectId | null;
+  riderId: Types.ObjectId;
+  driverId?: Types.ObjectId | null;
   pickup: {
     address: string;
     coords?: { lat: number; lng: number };
@@ -20,9 +24,9 @@ export interface IRide extends Document {
     address: string;
     coords?: { lat: number; lng: number };
   };
-  status: TRideStatus;
+  status: RideStatus;
   statusHistory: {
-    status: TRideStatus;
+    status: RideStatus;
     at: Date;
     by?: Schema.Types.ObjectId | string | null;
   }[];

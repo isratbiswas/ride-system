@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export enum Role {
   SUPER_ADMIN = "SUPER_ADMIN",
@@ -25,6 +25,8 @@ export interface IUser {
   isBlocked?: boolean;
   isActive?: IsActive;
   isVerified?: boolean;
+  rider?: Types.ObjectId[];
+  driver?: Types.ObjectId[];
   phone?: String;
   auths: IAuthProvider[];
 }

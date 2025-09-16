@@ -26,12 +26,14 @@ const credentialsLogin = async (payload: Partial<IUser>) => {
     email: isUserExist.email,
     role: isUserExist.role,
   };
+  console.log(jwtPayload, "bye");
 
   const accessToken = generateToken(
     jwtPayload,
     envVars.JWT_ACCESS_SECRET,
     envVars.JWT_ACCESS_EXPIRES
   );
+  console.log(accessToken, "hira");
   return {
     accessToken,
   };

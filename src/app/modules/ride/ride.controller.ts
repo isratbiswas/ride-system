@@ -4,25 +4,12 @@ import { RideServices } from "./ride.service";
 import httpStatus from "http-status-codes";
 import sendResponse from "../../utils/sendResponce";
 import { Role } from "../user/user.interface";
+import { JwtPayload } from "jsonwebtoken";
 
 const requestSendByRider = CatchAsync(async (req: Request, res: Response) => {
-  const rider = req.user as { userId: string };
-  if (!rider?.userId) {
-    return sendResponse(res, {
-      success: false,
-      statusCode: httpStatus.UNAUTHORIZED,
-      message: "Unauthorized: rider not found",
-      data: rider,
-    });
-  }
-
-  const { pickup, destination, estimateFare } = req.body;
-  const ride = await RideServices.requestSendByRider(
-    rider.userId,
-    pickup,
-    destination,
-    estimateFare
-  );
+  const riderId = (req.user as JwtPayload).userId;
+  const ride = await RideServices.requestSendByRider(req.body, riderId);
+  console.log(ride, "vira");
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -32,13 +19,10 @@ const requestSendByRider = CatchAsync(async (req: Request, res: Response) => {
 });
 
 const cancelRequestByRider = CatchAsync(async (req: Request, res: Response) => {
-  const rider = req.user as { userId: string };
-  const riderId = req.params.id;
-  const ride = await RideServices.cancelRequestByRider(
-    userId,
-    riderId,
-    Role === "RiDER"
-  );
+  const rider = req.user as JwtPayload;
+  const rideId = req.params.id;
+  const ride = await RideServices.cancelRequestByRider(rider.userId, rideId);
+  console.log(ride, "cont-26");
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

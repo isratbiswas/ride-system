@@ -1,41 +1,36 @@
+import { Types } from "mongoose";
 import AppError from "../../errorHelpers/AppError";
 import { Ride } from "./ride.model";
+import { IRide, RideStatus } from "./ride.initerface";
 
-const requestSendByRider = async (
-  riderId: string,
-  pickup: any,
-  destination: any,
-  estimateFare: number
-) => {
+const requestSendByRider = async (payload: Partial<IRide>, riderId: string) => {
   const requesteRide = await Ride.create({
-    rider: riderId,
-    pickup,
-    destination,
+    riderId: riderId,
     status: "requested",
-    statusHistory: [{ status: "requested", at: new Date(), by: riderId }],
-    fare: estimateFare || 0,
+    ...payload,
   });
-  console.log(requesteRide, "israt");
+
   return requesteRide;
 };
 
-const cancelRequestByRider = async (
-  riderId: string,
-  userId: string,
-  isAdmin: boolean
-) => {
-  const ride = await Ride.findById(riderId);
+const cancelRequestByRider = async (userId: string, rideId: string) => {
+  const ride = await Ride.findById(rideId);
   if (!ride) {
     throw new Error("Ride not Found");
   }
-  if (!ride.rider.equals(userId) && !isAdmin) {
+  if (!ride.riderId.equals(userId)) {
     throw new Error("Not Allowed");
   }
-  if (ride.status !== "requested") {
-    throw new Error("cannot cancel after accepted");
+  if (ride.status === RideStatus.cancelled) {
+    throw new Error("Ride already cancelled");
   }
-  ride.status = "cancelled";
-  ride.statusHistory.push({ status: "cancelled", at: new Date(), by: riderId });
+
+  ride.status = RideStatus.cancelled;
+  ride.statusHistory.push({
+    status: RideStatus.cancelled,
+    at: new Date(),
+    by: userId,
+  });
   await ride.save();
   return ride;
 };

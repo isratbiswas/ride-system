@@ -3,8 +3,8 @@ import { IRide, statusEntrySchema } from "./ride.initerface";
 
 const rideSchema = new Schema<IRide>(
   {
-    rider: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    driver: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    riderId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    driverId: { type: Schema.Types.ObjectId, ref: "User", default: null },
     pickup: {
       address: String,
       coords: {
