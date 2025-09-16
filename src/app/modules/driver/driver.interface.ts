@@ -1,4 +1,7 @@
+import { Types } from "mongoose";
+
 export interface IDriver {
+  driverId: Types.ObjectId;
   approved: boolean;
   online: boolean;
   vehicle?: {

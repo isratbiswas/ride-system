@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 import { IDriver } from "./driver.interface";
 
 const driverSchema = new Schema<IDriver>({
+  driverId: { type: Schema.Types.ObjectId, required: true },
   approved: { type: Boolean, default: false },
   online: { type: Boolean, default: false },
   vehicle: {
