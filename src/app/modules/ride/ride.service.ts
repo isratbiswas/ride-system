@@ -28,7 +28,7 @@ const cancelRequestByRider = async (userId: string, rideId: string) => {
   }
 
   ride.status = RideStatus.cancelled;
-  ride.statusHistory.push({
+  ride.history.push({
     status: RideStatus.cancelled,
     at: new Date(),
     by: userId,

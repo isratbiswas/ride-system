@@ -24,6 +24,7 @@ export interface IUser {
   role: Role;
   isBlocked?: boolean;
   isActive?: IsActive;
+  approved: boolean;
   isVerified?: boolean;
   rider?: Types.ObjectId[];
   driver?: Types.ObjectId[];

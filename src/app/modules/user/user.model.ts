@@ -22,6 +22,7 @@ const userSchema = new Schema<IUser>(
       enum: Object.values(Role),
       default: Role.RIDER,
     },
+    approved: { type: Boolean, default: false },
     isActive: {
       type: String,
       enum: Object.values(IsActive),

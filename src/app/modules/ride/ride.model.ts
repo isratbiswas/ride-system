@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IRide, statusEntrySchema } from "./ride.initerface";
+import { IRide, rideHistorySchema, RideStatus } from "./ride.initerface";
 
 const rideSchema = new Schema<IRide>(
   {
@@ -22,9 +22,13 @@ const rideSchema = new Schema<IRide>(
     },
     status: {
       type: String,
+      enum: Object.values(RideStatus),
       required: true,
     },
-    statusHistory: { type: [statusEntrySchema], default: [] },
+    history: {
+      type: [rideHistorySchema],
+      default: [],
+    },
     fare: { type: Number, default: 0 },
     driverPayout: { type: Number, default: 0 },
   },

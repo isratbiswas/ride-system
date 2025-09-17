@@ -1,17 +1,19 @@
-import { Document, Schema, Types } from "mongoose";
+import { Document, ObjectId, Schema, Types } from "mongoose";
 
 export enum RideStatus {
   requested = "requested",
   accepted = "accepted",
   cancelled = "cancelled",
+  completed = "completed",
+  picked_up = "picked_up",
+  in_transit = "in_transit",
 }
-// |
-// |
-// | "rejected"
-// | "picked_up"
-// | "in_transit"
-// | "completed"
-// |
+
+export interface IRideHistory {
+  status: RideStatus;
+  at: Date;
+  by?: string | ObjectId | null; // riderId or driverId
+}
 
 export interface IRide extends Document {
   riderId: Types.ObjectId;
@@ -25,20 +27,16 @@ export interface IRide extends Document {
     coords?: { lat: number; lng: number };
   };
   status: RideStatus;
-  statusHistory: {
-    status: RideStatus;
-    at: Date;
-    by?: Schema.Types.ObjectId | string | null;
-  }[];
+  history: IRideHistory[];
   fare: number;
   driverPayout?: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export const statusEntrySchema = new Schema(
+export const rideHistorySchema = new Schema(
   {
-    status: { type: String, required: true },
+    status: { type: String, enum: Object.values(RideStatus), required: true },
     at: { type: Date, default: Date.now },
     by: { type: Schema.Types.ObjectId, ref: "User", default: null },
   },
