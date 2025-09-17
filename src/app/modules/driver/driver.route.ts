@@ -16,7 +16,11 @@ router.patch(
   checkAuth(Role.DRIVER),
   DriverController.updateStatus
 );
-router.post("/availability", checkAuth(Role.DRIVER));
+router.patch(
+  "/availability",
+  checkAuth(Role.DRIVER),
+  DriverController.setAvailability
+);
 // router.get("/earnings", checkAuth(Role.DRIVER), DriverController.viewEarnings);
 
 export const driverRoutes = router;

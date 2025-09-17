@@ -17,11 +17,16 @@ export enum IsActive {
   BLOCKED = "BLOCKED",
 }
 
+export enum AvailabilityStatus {
+  ONLINE = "ONLINE",
+  OFFLINE = "OFFLINE",
+}
 export interface IUser {
   name: string;
   email: string;
   password: string;
   role: Role;
+  availabilityStatus?: AvailabilityStatus;
   isBlocked?: boolean;
   isActive?: IsActive;
   approved: boolean;

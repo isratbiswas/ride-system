@@ -1,8 +1,9 @@
 import AppError from "../../errorHelpers/AppError";
 import { RideStatus } from "../ride/ride.initerface";
 import { Ride } from "../ride/ride.model";
+import { AvailabilityStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
-import { AvailabilityStatus, IDriver } from "./driver.interface";
+import { IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 
 // const acceptRide = async (
@@ -134,13 +135,22 @@ const updateStatus = async (
 //   return driver.earnings;
 // };
 
-// set Availability
-// const setAbailability = async (driverId: string, AvailabilityStatus) => {
-//   const driver;
-// };
+//  Driver set Availability
+const setAvailability = async (
+  driverId: string,
+  availabilityStatus: AvailabilityStatus
+) => {
+  const updateDriver = await User.findOneAndUpdate(
+    { _id: driverId },
+    { availabilityStatus },
+    { new: true }
+  );
+
+  return updateDriver;
+};
 export const DriverServices = {
   acceptRide,
   cancelRide,
   updateStatus,
-  // viewEarnings,
+  setAvailability,
 };

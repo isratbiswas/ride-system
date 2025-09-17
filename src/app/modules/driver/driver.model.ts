@@ -1,13 +1,9 @@
 import { model, Schema } from "mongoose";
-import { AvailabilityStatus, IDriver } from "./driver.interface";
+import { IDriver } from "./driver.interface";
 
 const driverSchema = new Schema<IDriver>({
   driverId: { type: Schema.Types.ObjectId, required: true },
-  availabilityStatus: {
-    type: String,
-    enum: Object.values(AvailabilityStatus),
-    default: AvailabilityStatus.OFFLINE,
-  },
+
   approved: { type: Boolean, ref: "User" },
   vehicle: {
     make: String,

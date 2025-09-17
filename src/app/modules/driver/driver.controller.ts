@@ -83,9 +83,27 @@ const updateStatus = CatchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 
+// Driver set availityStatus
+const setAvailability = CatchAsync(async (req: Request, res: Response) => {
+  const driverId = (req.user as JwtPayload).userId;
+  const { availabilityStatus } = req.body;
+  const driver = await DriverServices.setAvailability(
+    driverId,
+    availabilityStatus
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: " Driver can set availability easily",
+    data: driver,
+  });
+});
+
 export const DriverController = {
   acceptRide,
   updateStatus,
   cancelRide,
+  setAvailability,
   // viewEarnings,
 };
