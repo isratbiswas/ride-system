@@ -11,6 +11,7 @@ interface EnvConfig {
   SUPER_ADMIN_PASSWORD: string;
   JWT_ACCESS_EXPIRES: string;
   JWT_ACCESS_SECRET: string;
+  FRONTEND_URL: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -23,6 +24,7 @@ const loadEnvVariables = (): EnvConfig => {
     "JWT_ACCESS_SECRET",
     "SUPER_ADMIN_EMAIL",
     "SUPER_ADMIN_PASSWORD",
+    "FRONTEND_URL",
   ];
   requiredEnvVariables.forEach((key) => {
     if (!process.env[key]) {
@@ -39,6 +41,7 @@ const loadEnvVariables = (): EnvConfig => {
     BCRYPT_SALT_ROUND: process.env.BCRYPT as string,
     SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
     SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_EMAIL as string,
+    FRONTEND_URL: process.env.FRONTEND_URL as string,
   };
 };
 
