@@ -6,6 +6,7 @@ import bcryptjs from "bcryptjs";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
+import { CatchAsync } from "../../utils/CatchAsync";
 
 const createUser = async (payload: Partial<IUser>) => {
   const { email, password, ...rest } = payload;
@@ -65,7 +66,12 @@ const updateUser = async (
   });
   return newUpdatedUser;
 };
-
+const getme = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+  return {
+    data: user,
+  };
+};
 const getAllUsers = async () => {
   const users = await User.find();
   const totalUsers = await User.countDocuments();
@@ -81,4 +87,5 @@ export const UserServices = {
   createUser,
   updateUser,
   getAllUsers,
+  getme,
 };

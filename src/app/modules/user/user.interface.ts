@@ -22,6 +22,7 @@ export enum AvailabilityStatus {
   OFFLINE = "OFFLINE",
 }
 export interface IUser {
+  _id?: Types.ObjectId;
   name: string;
   email: string;
   password: string;
@@ -29,7 +30,7 @@ export interface IUser {
   availabilityStatus?: AvailabilityStatus;
   isBlocked?: boolean;
   isActive?: IsActive;
-  approved: boolean;
+  approved?: boolean;
   isVerified?: boolean;
   rider?: Types.ObjectId[];
   driver?: Types.ObjectId[];

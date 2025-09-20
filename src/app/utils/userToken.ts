@@ -1,42 +1,24 @@
+import httpStatus from "http-status-codes";
+import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../config/env";
-import { IAuthProvider, IUser, Role } from "../modules/user/user.interface";
+import AppError from "../errorHelpers/AppError";
+import { IsActive, IUser } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
-import bcryptjs from "bcryptjs";
+import { generateToken, verifyToken } from "./jwt";
 
-export const createSuperAdmin = async () => {
-  try {
-    const isSuperAdminExist = await User.findOne({
-      email: envVars.SUPER_ADMIN_EMAIL,
-    });
-    if (isSuperAdminExist) {
-      console.log("Super Admin already Exists");
-      return;
-    }
-    const hashedPassword = await bcryptjs.hash(
-      envVars.SUPER_ADMIN_PASSWORD,
-      Number(envVars.BCRYPT_SALT_ROUND)
-    );
-    console.log(envVars.SUPER_ADMIN_PASSWORD, "password");
-    console.log(envVars.SUPER_ADMIN_EMAIL, "email");
-    console.log(hashedPassword);
-    const authProvider: IAuthProvider = {
-      provider: "credentials",
-      providerId: envVars.SUPER_ADMIN_EMAIL,
-    };
+export const createUserTokens = (user: Partial<IUser>) => {
+  const jwtPayload = {
+    userId: user._id,
+    email: user.email,
+    role: user.role,
+  };
+  const accessToken = generateToken(
+    jwtPayload,
+    envVars.JWT_ACCESS_SECRET,
+    envVars.JWT_ACCESS_EXPIRES
+  );
 
-    const payload: IUser = {
-      name: "Super_Admin",
-      role: Role.SUPER_ADMIN,
-      email: envVars.SUPER_ADMIN_EMAIL,
-      password: hashedPassword,
-      isVerified: true,
-      auths: [authProvider],
-    };
-
-    const superAdmin = await User.create(payload);
-    console.log("super admin created successfully!! \n");
-    console.log(superAdmin);
-  } catch (error) {
-    console.log(error);
-  }
+  return {
+    accessToken,
+  };
 };
