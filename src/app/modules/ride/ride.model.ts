@@ -1,5 +1,11 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { IRide, rideHistorySchema, RideStatus } from "./ride.initerface";
+
+const completedRideSchema = new Schema({
+  fare: { type: Number, required: true },
+  ride: { type: Types.ObjectId, ref: "Ride", required: true },
+  completedAt: { type: Date, default: Date.now },
+});
 
 const rideSchema = new Schema<IRide>(
   {
@@ -31,6 +37,7 @@ const rideSchema = new Schema<IRide>(
     },
     fare: { type: Number, default: 0 },
     driverPayout: { type: Number, default: 0 },
+    completedAt: { type: Date },
   },
   {
     timestamps: true,

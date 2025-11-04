@@ -11,9 +11,14 @@ router.post(
   RideController.requestSendByRider
 );
 router.patch(
-  "/:id/cancel",
+  "/cancel/:id",
   checkAuth(Role.RIDER),
   RideController.cancelRequestByRider
+);
+router.put(
+  "/completed/:id",
+  checkAuth(Role.DRIVER),
+  RideController.completedRide
 );
 router.get("/me", checkAuth(Role.RIDER), RideController.getMyRides);
 

@@ -1,11 +1,5 @@
 import { model, Schema } from "mongoose";
-import {
-  AvailabilityStatus,
-  IAuthProvider,
-  IsActive,
-  IUser,
-  Role,
-} from "./user.interface";
+import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>(
   {
@@ -25,15 +19,12 @@ const userSchema = new Schema<IUser>(
     password: { type: String },
     role: {
       type: String,
+      required: true,
       enum: Object.values(Role),
       default: Role.RIDER,
     },
-    availabilityStatus: {
-      type: String,
-      enum: Object.values(AvailabilityStatus),
-      default: AvailabilityStatus.OFFLINE,
-    },
-    approved: { type: Boolean, default: false },
+
+    approve: { type: Boolean, default: false },
     isActive: {
       type: String,
       enum: Object.values(IsActive),

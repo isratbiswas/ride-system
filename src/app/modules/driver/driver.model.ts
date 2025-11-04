@@ -1,23 +1,42 @@
-import { model, Schema } from "mongoose";
-import { IDriver } from "./driver.interface";
+import { model, Schema, Types } from "mongoose";
+import { AvailabilityStatus, DriverStatus, IDriver } from "./driver.interface";
+import { IsActive } from "../user/user.interface";
+
+const completedRideSchema = new Schema({
+  fare: { type: Number, required: true },
+  ride: { type: Types.ObjectId, ref: "Ride", required: true },
+  completedAt: { type: Date, default: Date.now },
+});
 
 const driverSchema = new Schema<IDriver>({
   driverId: { type: Schema.Types.ObjectId, required: true },
-
-  approved: { type: Boolean, ref: "User" },
+  riderId: { type: Schema.Types.ObjectId, ref: "Ride" },
+  approve: { type: Boolean },
+  name: { type: String },
+  email: { type: String },
   vehicle: {
     make: String,
     model: String,
     plate: String,
   },
+  isActive: {
+    type: String,
+    enum: Object.values(IsActive),
+    default: IsActive.ACTIVE,
+  },
+  availabilityStatus: {
+    type: String,
+    enum: Object.values(AvailabilityStatus),
+    default: AvailabilityStatus.OFFLINE,
+  },
+  requestStatus: {
+    type: String,
+    enum: Object.values(DriverStatus),
+    default: DriverStatus.none,
+  },
   currentRideId: { type: Schema.Types.ObjectId, ref: "Ride", default: null },
-  earnings: [
-    {
-      amount: { type: Number, required: true },
-      at: { type: Date, default: Date },
-      ride: { type: Schema.Types.ObjectId, ref: "Ride" },
-    },
-  ],
+  earnings: { type: Number, default: 0 },
+  complatedRides: [completedRideSchema],
 });
 
 export const Driver = model<IDriver>("Driver", driverSchema);

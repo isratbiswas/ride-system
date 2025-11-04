@@ -1,9 +1,8 @@
 import AppError from "../../errorHelpers/AppError";
 import { RideStatus } from "../ride/ride.initerface";
 import { Ride } from "../ride/ride.model";
-import { AvailabilityStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
-import { IDriver } from "./driver.interface";
+import { AvailabilityStatus, DriverStatus, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 
 // const acceptRide = async (
@@ -47,7 +46,7 @@ import { Driver } from "./driver.model";
 // };
 
 const acceptRide = async (
-  payload: Partial<IDriver>,
+  // payload: Partial<IDriver>,
   driverId: string,
   rideId: string
 ) => {
@@ -120,6 +119,24 @@ const updateStatus = async (
   return ride;
 };
 
+// services/driver.service.ts
+
+const getDriverProfileService = async (driverId: string) => {
+  const driver = await Ride.find({ driverId });
+
+  if (!driver) throw new AppError(400, "Driver not found");
+  const totalRides = await Ride.countDocuments();
+  console.log(driver, "serv-43");
+  return {
+    driver,
+    meta: {
+      total: totalRides,
+    },
+  };
+
+  return driver;
+};
+
 // view earnings
 // const viewEarnings = async (driverId: string) => {
 //   // Find driver with earnings populated
@@ -135,12 +152,45 @@ const updateStatus = async (
 //   return driver.earnings;
 // };
 
+const completeRideService = async (
+  driverId: string,
+  rideId: string,
+  status: RideStatus
+) => {
+  // 1️⃣ Find ride
+  const ride = await Ride.findById(rideId);
+  if (!ride) throw new Error("Ride not found");
+
+  // 2️⃣ Mark ride as completed
+  ride.status = RideStatus.completed;
+  await ride.save();
+
+  // 3️⃣ Check/create driver in Driver collection
+  let driver = await Ride.findOne({ user: ride.driverId });
+
+  if (!driver) {
+    throw new AppError(401, "driver not found");
+  }
+
+  // 4️⃣ Add ride info to driver's completedRides
+  // driver.complatedRides.push({
+  //   ride: ride._id as string,
+  //   fare: ride.fare,
+  //   completedAt: new Date(),
+  // });
+
+  // driver.earnings += ride.fare;
+  // await driver.save();
+
+  return ride;
+};
+
 //  Driver set Availability
 const setAvailability = async (
   driverId: string,
   availabilityStatus: AvailabilityStatus
 ) => {
-  const updateDriver = await User.findOneAndUpdate(
+  const updateDriver = await Driver.findOneAndUpdate(
     { _id: driverId },
     { availabilityStatus },
     { new: true }
@@ -148,9 +198,26 @@ const setAvailability = async (
 
   return updateDriver;
 };
+
+// driver request for approve
+const requestForApprove = async (driverId: string) => {
+  const driver = await Driver.findOne({ driverId });
+  if (!driver) {
+    throw new AppError(401, "Driver not Found");
+  }
+  if (driver.requestStatus === "pending") {
+    throw new AppError(400, "Request already sent");
+  }
+  driver.requestStatus = DriverStatus.pending;
+  await driver.save();
+  return { driver, message: "Approval request sent to admin" };
+};
 export const DriverServices = {
   acceptRide,
   cancelRide,
   updateStatus,
   setAvailability,
+  getDriverProfileService,
+  completeRideService,
+  requestForApprove,
 };

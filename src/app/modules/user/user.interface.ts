@@ -17,20 +17,16 @@ export enum IsActive {
   BLOCKED = "BLOCKED",
 }
 
-export enum AvailabilityStatus {
-  ONLINE = "ONLINE",
-  OFFLINE = "OFFLINE",
-}
 export interface IUser {
   _id?: Types.ObjectId;
   name: string;
   email: string;
   password: string;
   role: Role;
-  availabilityStatus?: AvailabilityStatus;
+
   isBlocked?: boolean;
   isActive?: IsActive;
-  approved?: boolean;
+  approve?: boolean;
   isVerified?: boolean;
   rider?: Types.ObjectId[];
   driver?: Types.ObjectId[];

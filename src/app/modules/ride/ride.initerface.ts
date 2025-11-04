@@ -32,6 +32,7 @@ export interface IRide extends Document {
   driverPayout?: number;
   createdAt: Date;
   updatedAt: Date;
+  completedAt: Date;
 }
 
 export const rideHistorySchema = new Schema(

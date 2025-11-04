@@ -42,8 +42,21 @@ const getMyRides = CatchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const completedRide = CatchAsync(async (req: Request, res: Response) => {
+  const rideId = req.params.id;
+  const driverId = (req.user as JwtPayload).userId;
+  const ride = await RideServices.completedRide(rideId, driverId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Ride completed successfully",
+    data: ride,
+  });
+});
+
 export const RideController = {
   requestSendByRider,
   cancelRequestByRider,
   getMyRides,
+  completedRide,
 };

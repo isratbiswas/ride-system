@@ -7,9 +7,10 @@ import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
 import { CatchAsync } from "../../utils/CatchAsync";
+import { Driver } from "../driver/driver.model";
 
 const createUser = async (payload: Partial<IUser>) => {
-  const { email, password, ...rest } = payload;
+  const { email, password, role, ...rest } = payload;
   const isUserExist = await User.findOne({ email });
   if (isUserExist) {
     throw new Error("user already exist");
@@ -18,6 +19,8 @@ const createUser = async (payload: Partial<IUser>) => {
     password as string,
     Number(envVars.BCRYPT_SALT_ROUND)
   );
+  const validRole =
+    role && Object.values(Role).includes(role) ? role : Role.RIDER;
   const authProvider: IAuthProvider = {
     provider: "credentials",
     providerId: email as string,
@@ -25,9 +28,17 @@ const createUser = async (payload: Partial<IUser>) => {
   const user = await User.create({
     email,
     password: hashedPassword,
+    role: validRole,
     auths: [authProvider],
     ...rest,
   });
+  if (role === Role.DRIVER) {
+    await Driver.create({
+      driverId: user._id,
+      ...payload,
+      ...rest,
+    });
+  }
   return user;
 };
 

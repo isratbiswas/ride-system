@@ -11,7 +11,7 @@ const acceptRide = CatchAsync(async (req: Request, res: Response) => {
   console.log(driverId, "dcon-10");
   const rideId = req.params.id;
   console.log("rideId", "dcon-11");
-  const ride = await DriverServices.acceptRide(req.body, driverId, rideId);
+  const ride = await DriverServices.acceptRide(driverId, rideId);
   console.log(ride, "dcon-13");
   sendResponse(res, {
     success: true,
@@ -83,6 +83,20 @@ const updateStatus = CatchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 
+const getDriverProfile = async (req: Request, res: Response) => {
+  try {
+    const driverId = req.params.id;
+    const driver = await DriverServices.getDriverProfileService(driverId);
+
+    res.status(200).json({
+      message: "Driver profile fetched successfully",
+      driver,
+    });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Driver set availityStatus
 const setAvailability = CatchAsync(async (req: Request, res: Response) => {
   const driverId = (req.user as JwtPayload).userId;
@@ -100,10 +114,47 @@ const setAvailability = CatchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const completeRide = async (req: Request, res: Response) => {
+  try {
+    const driverId = (req.user as JwtPayload).userId;
+    const rideId = req.params.id;
+    console.log(rideId, "midffd");
+    const { status } = req.body;
+    const rides = await DriverServices.completeRideService(
+      driverId,
+      rideId,
+      status as RideStatus
+    );
+
+    res.status(200).json({
+      message: "Ride completed successfully",
+      rides,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      message: err.message || "Failed to complete ride",
+    });
+  }
+};
+
+const requestForApprove = CatchAsync(async (req: Request, res: Response) => {
+  const driverId = (req.user as JwtPayload).userId;
+  const result = await DriverServices.requestForApprove(driverId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Driver request admin for approve",
+    data: result,
+  });
+});
+
 export const DriverController = {
   acceptRide,
   updateStatus,
   cancelRide,
   setAvailability,
+  getDriverProfile,
+  completeRide,
+  requestForApprove,
   // viewEarnings,
 };
