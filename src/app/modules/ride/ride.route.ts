@@ -15,11 +15,7 @@ router.patch(
   checkAuth(Role.RIDER),
   RideController.cancelRequestByRider
 );
-router.put(
-  "/completed/:id",
-  checkAuth(Role.DRIVER),
-  RideController.completedRide
-);
+
 router.get("/me", checkAuth(Role.RIDER), RideController.getMyRides);
 
 export const riderRoutes = router;

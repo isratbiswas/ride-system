@@ -16,7 +16,8 @@ exports.DriverServices = void 0;
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const ride_initerface_1 = require("../ride/ride.initerface");
 const ride_model_1 = require("../ride/ride.model");
-const user_model_1 = require("../user/user.model");
+const driver_interface_1 = require("./driver.interface");
+const driver_model_1 = require("./driver.model");
 // const acceptRide = async (
 //   payload: Partial<IDriver>,
 //   driverId: string,
@@ -54,7 +55,9 @@ const user_model_1 = require("../user/user.model");
 //     createDriver,
 //   };
 // };
-const acceptRide = (payload, driverId, rideId) => __awaiter(void 0, void 0, void 0, function* () {
+const acceptRide = (
+// payload: Partial<IDriver>,
+driverId, rideId) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(driverId, rideId, "dser-10");
     const ride = yield ride_model_1.Ride.findByIdAndUpdate(rideId, {
         driverId: driverId,
@@ -112,6 +115,21 @@ const updateStatus = (driverId, rideId, status) => __awaiter(void 0, void 0, voi
     yield ride.save();
     return ride;
 });
+// services/driver.service.ts
+const getDriverProfileService = (driverId) => __awaiter(void 0, void 0, void 0, function* () {
+    const driver = yield ride_model_1.Ride.find({ driverId });
+    if (!driver)
+        throw new AppError_1.default(400, "Driver not found");
+    const totalRides = yield ride_model_1.Ride.countDocuments();
+    console.log(driver, "serv-43");
+    return {
+        driver,
+        meta: {
+            total: totalRides,
+        },
+    };
+    return driver;
+});
 // view earnings
 // const viewEarnings = async (driverId: string) => {
 //   // Find driver with earnings populated
@@ -125,14 +143,53 @@ const updateStatus = (driverId, rideId, status) => __awaiter(void 0, void 0, voi
 //   }
 //   return driver.earnings;
 // };
+const completeRideService = (driverId, rideId, status) => __awaiter(void 0, void 0, void 0, function* () {
+    // 1️⃣ Find ride
+    const ride = yield ride_model_1.Ride.findById(rideId);
+    if (!ride)
+        throw new Error("Ride not found");
+    // 2️⃣ Mark ride as completed
+    ride.status = ride_initerface_1.RideStatus.completed;
+    yield ride.save();
+    // 3️⃣ Check/create driver in Driver collection
+    let driver = yield ride_model_1.Ride.findOne({ user: ride.driverId });
+    if (!driver) {
+        throw new AppError_1.default(401, "driver not found");
+    }
+    // 4️⃣ Add ride info to driver's completedRides
+    // driver.complatedRides.push({
+    //   ride: ride._id as string,
+    //   fare: ride.fare,
+    //   completedAt: new Date(),
+    // });
+    // driver.earnings += ride.fare;
+    // await driver.save();
+    return ride;
+});
 //  Driver set Availability
 const setAvailability = (driverId, availabilityStatus) => __awaiter(void 0, void 0, void 0, function* () {
-    const updateDriver = yield user_model_1.User.findOneAndUpdate({ _id: driverId }, { availabilityStatus }, { new: true });
+    const updateDriver = yield driver_model_1.Driver.findOneAndUpdate({ _id: driverId }, { availabilityStatus }, { new: true });
     return updateDriver;
+});
+// driver request for approve
+const requestForApprove = (driverId) => __awaiter(void 0, void 0, void 0, function* () {
+    const driver = yield driver_model_1.Driver.findOne({ driverId });
+    if (!driver) {
+        throw new AppError_1.default(401, "Driver not Found");
+    }
+    if (driver.requestStatus === "pending") {
+        throw new AppError_1.default(400, "Request already sent");
+    }
+    driver.requestStatus = driver_interface_1.DriverStatus.pending;
+    yield driver.save();
+    return { driver, message: "Approval request sent to admin" };
 });
 exports.DriverServices = {
     acceptRide,
     cancelRide,
     updateStatus,
     setAvailability,
+    getDriverProfileService,
+    completeRideService,
+    requestForApprove,
 };

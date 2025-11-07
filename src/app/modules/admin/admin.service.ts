@@ -3,6 +3,7 @@ import AppError from "../../errorHelpers/AppError";
 import { Driver } from "../driver/driver.model";
 import { DriverStatus } from "../driver/driver.interface";
 import { IsActive } from "../user/user.interface";
+import { User } from "../user/user.model";
 
 const getPendingDrivers = async () => {
   const pendingDrivers = await Driver.find({
@@ -44,28 +45,25 @@ const rejectDriver = async (driverId: string) => {
   await driver.save();
   return driver;
 };
-const blockDriver = async (driverId: string) => {
-  const driver = await Driver.findOne({ driverId });
-  if (!driver) {
-    throw new AppError(400, "Driver not found");
+const blockUser = async (userId: string) => {
+  console.log(userId, "user");
+  const user = await User.findById(userId);
+  console.log(user, "ser-50");
+  if (!user) {
+    throw new AppError(400, "user not found");
   }
-  if (driver.isActive === "BLOCKED") {
+  if (user.isActive === "BLOCKED") {
     throw new Error("Driver already blocked");
   }
-  if (driver.isActive === "INACTIVE") {
-    throw new Error("Driver already INACTIVE");
-  }
-  if (driver.isActive === "ACTIVE") {
-    throw new Error("Driver already ACTIVE");
-  }
-  driver.isActive = IsActive.BLOCKED;
-  await driver.save();
-  return driver;
+
+  user.isActive = IsActive.BLOCKED;
+  await user.save();
+  return user;
 };
 
 export const AdminService = {
   getPendingDrivers,
   approveDriver,
   rejectDriver,
-  blockDriver,
+  blockUser,
 };

@@ -50,8 +50,20 @@ const getMyRides = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, 
         data: rides,
     });
 }));
+const completedRide = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const rideId = req.params.id;
+    const driverId = req.user.userId;
+    const ride = yield ride_service_1.RideServices.completedRide(rideId, driverId);
+    (0, sendResponce_1.default)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        message: "Ride completed successfully",
+        data: ride,
+    });
+}));
 exports.RideController = {
     requestSendByRider,
     cancelRequestByRider,
     getMyRides,
+    completedRide,
 };

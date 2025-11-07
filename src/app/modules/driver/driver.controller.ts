@@ -70,18 +70,18 @@ const updateStatus = CatchAsync(async (req: Request, res: Response) => {
 
 // driver view earnings
 
-// const viewEarnings = CatchAsync(async (req: Request, res: Response) => {
-//   const driverId = (req.user as JwtPayload).userId;
-//   console.log(driverId, "dlfdj");
-//   const earnings = await DriverServices.viewEarnings(driverId);
-//   console.log(earnings, "lllll");
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     message: "Driver earnings retrieved successfully",
-//     data: earnings,
-//   });
-// });
+const viewEarnings = CatchAsync(async (req: Request, res: Response) => {
+  const driverId = (req.user as JwtPayload).userId;
+  console.log(driverId, "dlfdj");
+  const earnings = await DriverServices.viewEarnings(driverId);
+  console.log(earnings, "lllll");
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Driver earnings retrieved successfully",
+    data: { earnings: earnings },
+  });
+});
 
 const getDriverProfile = async (req: Request, res: Response) => {
   try {
@@ -114,28 +114,18 @@ const setAvailability = CatchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const completeRide = async (req: Request, res: Response) => {
-  try {
-    const driverId = (req.user as JwtPayload).userId;
-    const rideId = req.params.id;
-    console.log(rideId, "midffd");
-    const { status } = req.body;
-    const rides = await DriverServices.completeRideService(
-      driverId,
-      rideId,
-      status as RideStatus
-    );
+const completeRide = CatchAsync(async (req: Request, res: Response) => {
+  const driverId = (req.user as JwtPayload).userId;
+  const rideId = req.params.id;
+  console.log(rideId, "midffd");
 
-    res.status(200).json({
-      message: "Ride completed successfully",
-      rides,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      message: err.message || "Failed to complete ride",
-    });
-  }
-};
+  const rides = await DriverServices.completeRideService(driverId, rideId);
+
+  res.status(200).json({
+    message: "Ride completed successfully",
+    rides,
+  });
+});
 
 const requestForApprove = CatchAsync(async (req: Request, res: Response) => {
   const driverId = (req.user as JwtPayload).userId;
@@ -156,5 +146,5 @@ export const DriverController = {
   getDriverProfile,
   completeRide,
   requestForApprove,
-  // viewEarnings,
+  viewEarnings,
 };

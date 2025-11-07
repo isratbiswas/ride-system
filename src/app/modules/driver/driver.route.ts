@@ -11,8 +11,8 @@ router.post(
   checkAuth(Role.DRIVER),
   DriverController.requestForApprove
 );
-router.get(
-  "/completed/me",
+router.patch(
+  "/completed/:id",
   checkAuth(Role.DRIVER),
   DriverController.completeRide
 );
@@ -33,6 +33,6 @@ router.patch(
   checkAuth(Role.DRIVER),
   DriverController.setAvailability
 );
-// router.get("/earnings", checkAuth(Role.DRIVER), DriverController.viewEarnings);
+router.get("/earnings", checkAuth(Role.DRIVER), DriverController.viewEarnings);
 
 export const driverRoutes = router;

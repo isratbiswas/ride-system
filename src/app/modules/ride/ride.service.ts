@@ -52,26 +52,8 @@ const getMyRides = async (riderId: string | ObjectId) => {
   };
 };
 
-const completedRide = async (rideId: string, driverId: string) => {
-  // const ride = await Ride.findById(rideId);
-  // if (!ride) {
-  //   return res.status(404).json({ success: false, message: "Ride not found" });
-  // }
-  // ride.status = RideStatus.completed;
-  // ride.completedAt = new Date();
-  // await ride.save();
-  // //Find driver document
-  // const driver = await Ride.findOne({ driverId });
-  // if (!driver) {
-  //   return res
-  //     .status(404)
-  //     .json({ success: false, message: "Driver profile not found" });
-  // }
-};
-
 export const RideServices = {
   requestSendByRider,
   cancelRequestByRider,
   getMyRides,
-  completedRide,
 };

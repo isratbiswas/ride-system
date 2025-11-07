@@ -31,6 +31,6 @@ export interface IDriver {
   requestStatus?: DriverStatus;
   currentRideId?: string | null;
   availabilityStatus?: AvailabilityStatus;
-  earnings?: number | 0;
-  complatedRides?: ICompletedRide[];
+  earnings: number;
+  completedRides: ICompletedRide[];
 }

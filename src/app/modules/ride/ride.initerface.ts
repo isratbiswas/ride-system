@@ -17,6 +17,8 @@ export interface IRideHistory {
 
 export interface IRide extends Document {
   riderId: Types.ObjectId;
+  name: string;
+  email: string;
   driverId?: Types.ObjectId | null;
   pickup: {
     address: string;

@@ -30,18 +30,23 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const env_1 = require("../../config/env");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
+const driver_model_1 = require("../driver/driver.model");
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = payload, rest = __rest(payload, ["email", "password"]);
+    const { email, password, role } = payload, rest = __rest(payload, ["email", "password", "role"]);
     const isUserExist = yield user_model_1.User.findOne({ email });
     if (isUserExist) {
         throw new Error("user already exist");
     }
     const hashedPassword = yield bcryptjs_1.default.hash(password, Number(env_1.envVars.BCRYPT_SALT_ROUND));
+    const validRole = role && Object.values(user_interface_1.Role).includes(role) ? role : user_interface_1.Role.RIDER;
     const authProvider = {
         provider: "credentials",
         providerId: email,
     };
-    const user = yield user_model_1.User.create(Object.assign({ email, password: hashedPassword, auths: [authProvider] }, rest));
+    const user = yield user_model_1.User.create(Object.assign({ email, password: hashedPassword, role: validRole, auths: [authProvider] }, rest));
+    if (role === user_interface_1.Role.DRIVER) {
+        yield driver_model_1.Driver.create(Object.assign(Object.assign({ driverId: user._id }, payload), rest));
+    }
     return user;
 });
 const updateUser = (userId, payload, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {

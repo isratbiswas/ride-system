@@ -7,6 +7,7 @@ const user_interface_1 = require("../user/user.interface");
 const ride_controller_1 = require("./ride.controller");
 const router = (0, express_1.Router)();
 router.post("/request", (0, checkAuth_1.checkAuth)(user_interface_1.Role.RIDER), ride_controller_1.RideController.requestSendByRider);
-router.patch("/:id/cancel", (0, checkAuth_1.checkAuth)(user_interface_1.Role.RIDER), ride_controller_1.RideController.cancelRequestByRider);
+router.patch("/cancel/:id", (0, checkAuth_1.checkAuth)(user_interface_1.Role.RIDER), ride_controller_1.RideController.cancelRequestByRider);
+router.put("/completed/:id", (0, checkAuth_1.checkAuth)(user_interface_1.Role.DRIVER), ride_controller_1.RideController.completedRide);
 router.get("/me", (0, checkAuth_1.checkAuth)(user_interface_1.Role.RIDER), ride_controller_1.RideController.getMyRides);
 exports.riderRoutes = router;

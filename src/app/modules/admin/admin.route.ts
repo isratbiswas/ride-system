@@ -24,7 +24,7 @@ router.patch(
 router.patch(
   "/block/:id",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-  AdminController.blockDriver
+  AdminController.blockUser
 );
 
 export const AdminRoutes = router;

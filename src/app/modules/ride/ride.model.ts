@@ -18,6 +18,12 @@ const rideSchema = new Schema<IRide>(
         lng: Number,
       },
     },
+    name: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
 
     destination: {
       address: String,

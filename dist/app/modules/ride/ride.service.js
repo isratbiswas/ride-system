@@ -50,8 +50,25 @@ const getMyRides = (riderId) => __awaiter(void 0, void 0, void 0, function* () {
         },
     };
 });
+const completedRide = (rideId, driverId) => __awaiter(void 0, void 0, void 0, function* () {
+    // const ride = await Ride.findById(rideId);
+    // if (!ride) {
+    //   return res.status(404).json({ success: false, message: "Ride not found" });
+    // }
+    // ride.status = RideStatus.completed;
+    // ride.completedAt = new Date();
+    // await ride.save();
+    // //Find driver document
+    // const driver = await Ride.findOne({ driverId });
+    // if (!driver) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "Driver profile not found" });
+    // }
+});
 exports.RideServices = {
     requestSendByRider,
     cancelRequestByRider,
     getMyRides,
+    completedRide,
 };

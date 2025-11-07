@@ -40,9 +40,11 @@ const rejectDriver = CatchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const blockDriver = CatchAsync(async (req: Request, res: Response) => {
-  const driverId = req.params.id;
-  const result = await AdminService.blockDriver(driverId);
+const blockUser = CatchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  console.log(userId, "con-44");
+
+  const result = await AdminService.blockUser(userId);
   sendResponse(res, {
     success: true,
     statusCode: 200,
@@ -55,5 +57,5 @@ export const AdminController = {
   getPendingDrivers,
   approveDriver,
   rejectDriver,
-  blockDriver,
+  blockUser,
 };

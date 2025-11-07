@@ -22,7 +22,7 @@ const acceptRide = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, 
     console.log(driverId, "dcon-10");
     const rideId = req.params.id;
     console.log("rideId", "dcon-11");
-    const ride = yield driver_service_1.DriverServices.acceptRide(req.body, driverId, rideId);
+    const ride = yield driver_service_1.DriverServices.acceptRide(driverId, rideId);
     console.log(ride, "dcon-13");
     (0, sendResponce_1.default)(res, {
         success: true,
@@ -83,6 +83,19 @@ const updateStatus = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0
 //     data: earnings,
 //   });
 // });
+const getDriverProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const driverId = req.params.id;
+        const driver = yield driver_service_1.DriverServices.getDriverProfileService(driverId);
+        res.status(200).json({
+            message: "Driver profile fetched successfully",
+            driver,
+        });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 // Driver set availityStatus
 const setAvailability = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const driverId = req.user.userId;
@@ -95,10 +108,41 @@ const setAvailability = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(voi
         data: driver,
     });
 }));
+const completeRide = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const driverId = req.user.userId;
+        const rideId = req.params.id;
+        console.log(rideId, "midffd");
+        const { status } = req.body;
+        const rides = yield driver_service_1.DriverServices.completeRideService(driverId, rideId, status);
+        res.status(200).json({
+            message: "Ride completed successfully",
+            rides,
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            message: err.message || "Failed to complete ride",
+        });
+    }
+});
+const requestForApprove = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.user.userId;
+    const result = yield driver_service_1.DriverServices.requestForApprove(driverId);
+    (0, sendResponce_1.default)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        message: "Driver request admin for approve",
+        data: result,
+    });
+}));
 exports.DriverController = {
     acceptRide,
     updateStatus,
     cancelRide,
     setAvailability,
+    getDriverProfile,
+    completeRide,
+    requestForApprove,
     // viewEarnings,
 };

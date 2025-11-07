@@ -3,6 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Ride = void 0;
 const mongoose_1 = require("mongoose");
 const ride_initerface_1 = require("./ride.initerface");
+const completedRideSchema = new mongoose_1.Schema({
+    fare: { type: Number, required: true },
+    ride: { type: mongoose_1.Types.ObjectId, ref: "Ride", required: true },
+    completedAt: { type: Date, default: Date.now },
+});
 const rideSchema = new mongoose_1.Schema({
     riderId: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
     driverId: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", default: null },
@@ -31,6 +36,7 @@ const rideSchema = new mongoose_1.Schema({
     },
     fare: { type: Number, default: 0 },
     driverPayout: { type: Number, default: 0 },
+    completedAt: { type: Date },
 }, {
     timestamps: true,
     versionKey: false,

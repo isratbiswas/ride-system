@@ -5,46 +5,6 @@ import { User } from "../user/user.model";
 import { AvailabilityStatus, DriverStatus, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 
-// const acceptRide = async (
-//   payload: Partial<IDriver>,
-//   driverId: string,
-//   rideId: string
-// ) => {
-//   console.log(driverId, rideId, "dser-10");
-
-//   const createDriver = await Driver.create({
-//     driverId: driverId,
-//     status: "accepted",
-//     ...payload,
-//   });
-
-//   const ride = await Ride.findByIdAndUpdate(
-//     rideId,
-//     {
-//       driverId: driverId,
-//     },
-//     { new: true }
-//   );
-//   console.log(ride, "dser-11");
-//   if (!ride) {
-//     throw new AppError(400, "Ride Not Found");
-//   }
-//   if (ride.status !== RideStatus.requested) {
-//     throw new AppError(401, "Ride already taken");
-//   }
-//   ride.status = RideStatus.accepted;
-//   ride.history.push({
-//     status: RideStatus.accepted,
-//     at: new Date(),
-//     by: driverId,
-//   });
-//   await ride.save();
-//   return {
-//     ride,
-//     createDriver,
-//   };
-// };
-
 const acceptRide = async (
   // payload: Partial<IDriver>,
   driverId: string,
@@ -138,25 +98,19 @@ const getDriverProfileService = async (driverId: string) => {
 };
 
 // view earnings
-// const viewEarnings = async (driverId: string) => {
-//   // Find driver with earnings populated
-//   console.log(driverId, "ddddd");
-//   const driver = await User.findOne({ _id: driverId, role: "driver" }).populate(
-//     "earnings.ride"
-//   );
-//   console.log(driver, "rrrrr");
-//   if (!driver) {
-//     throw new AppError(404, "Driver not found");
-//   }
+const viewEarnings = async (driverId: string) => {
+  // Find driver with earnings populated
+  console.log(driverId, "ddddd");
+  const driver = await Driver.findOne({ driverId });
+  console.log(driver, "rrrrr");
+  if (!driver) {
+    throw new AppError(404, "Driver not found");
+  }
 
-//   return driver.earnings;
-// };
+  return driver.earnings;
+};
 
-const completeRideService = async (
-  driverId: string,
-  rideId: string,
-  status: RideStatus
-) => {
+const completeRideService = async (driverId: string, rideId: string) => {
   // 1️⃣ Find ride
   const ride = await Ride.findById(rideId);
   if (!ride) throw new Error("Ride not found");
@@ -166,21 +120,24 @@ const completeRideService = async (
   await ride.save();
 
   // 3️⃣ Check/create driver in Driver collection
-  let driver = await Ride.findOne({ user: ride.driverId });
+  let driver = await Driver.findOne({ driverId });
 
   if (!driver) {
     throw new AppError(401, "driver not found");
   }
+  if (!driver.completedRides) {
+    driver.completedRides = [];
+  }
 
   // 4️⃣ Add ride info to driver's completedRides
-  // driver.complatedRides.push({
-  //   ride: ride._id as string,
-  //   fare: ride.fare,
-  //   completedAt: new Date(),
-  // });
 
-  // driver.earnings += ride.fare;
-  // await driver.save();
+  driver.completedRides.push({
+    ride: ride._id as string,
+    fare: ride.fare,
+    completedAt: new Date(),
+  });
+  driver.earnings = (driver.earnings ?? 0) + ride.fare;
+  await driver.save();
 
   return ride;
 };
@@ -220,4 +177,5 @@ export const DriverServices = {
   getDriverProfileService,
   completeRideService,
   requestForApprove,
+  viewEarnings,
 };

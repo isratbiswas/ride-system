@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AvailabilityStatus = exports.IsActive = exports.Role = void 0;
+exports.IsActive = exports.Role = void 0;
 var Role;
 (function (Role) {
     Role["SUPER_ADMIN"] = "SUPER_ADMIN";
@@ -14,8 +14,3 @@ var IsActive;
     IsActive["INACTIVE"] = "INACTIVE";
     IsActive["BLOCKED"] = "BLOCKED";
 })(IsActive || (exports.IsActive = IsActive = {}));
-var AvailabilityStatus;
-(function (AvailabilityStatus) {
-    AvailabilityStatus["ONLINE"] = "ONLINE";
-    AvailabilityStatus["OFFLINE"] = "OFFLINE";
-})(AvailabilityStatus || (exports.AvailabilityStatus = AvailabilityStatus = {}));
