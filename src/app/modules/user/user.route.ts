@@ -8,13 +8,20 @@ import { createUserZodSchema, updateUserZodSchema } from "./user.validation";
 import { validateRequest } from "../../middlewares/validRequest";
 
 const router = Router();
+//profile for admin, driver, rider
+
+router.get("/me", checkAuth(...Object.values(Role)), UserControllers.getme);
+router.patch(
+  "/me",
+  checkAuth(...Object.values(Role)),
+  UserControllers.updateProfile
+);
 
 router.post(
   "/register",
   validateRequest(createUserZodSchema),
   UserControllers.createUser
 );
-router.get("/me", checkAuth(...Object.values(Role)), UserControllers.getme);
 router.get(
   "/all-users",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),

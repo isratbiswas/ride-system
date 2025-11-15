@@ -18,7 +18,7 @@ router.patch(
 );
 router.post("/accept/:id", checkAuth(Role.DRIVER), DriverController.acceptRide);
 router.patch(
-  "/cancel/:id",
+  "/reject/:id",
   checkAuth(Role.DRIVER),
   DriverController.cancelRide
 );

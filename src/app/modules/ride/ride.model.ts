@@ -42,7 +42,6 @@ const rideSchema = new Schema<IRide>(
       default: [],
     },
     fare: { type: Number, default: 0 },
-    driverPayout: { type: Number, default: 0 },
     completedAt: { type: Date },
   },
   {

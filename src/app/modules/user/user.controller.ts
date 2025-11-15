@@ -6,6 +6,7 @@ import { CatchAsync } from "../../utils/CatchAsync";
 // import { sendResponse } from "../../utils/sendResponce";
 import sendResponse from "../../utils/sendResponce";
 import { JwtPayload } from "jsonwebtoken";
+import AppError from "../../errorHelpers/AppError";
 
 const createUser = CatchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -47,11 +48,27 @@ const getme = CatchAsync(
   }
 );
 
+const updateProfile = CatchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req.user as JwtPayload).userId;
+    if (!userId) {
+      throw new AppError(400, "User not found");
+    }
+    const profile = await UserServices.updateProfile(userId, req.body);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "user profile updated successfully",
+      data: profile,
+    });
+  }
+);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
 const getAllUsers = CatchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await UserServices.getAllUsers();
+    const result = await UserServices.getAllUsers(req.query);
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
@@ -67,4 +84,5 @@ export const UserControllers = {
   updateUser,
   getAllUsers,
   getme,
+  updateProfile,
 };

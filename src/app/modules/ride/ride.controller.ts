@@ -9,7 +9,7 @@ import { JwtPayload } from "jsonwebtoken";
 const requestSendByRider = CatchAsync(async (req: Request, res: Response) => {
   const riderId = (req.user as JwtPayload).userId;
   const ride = await RideServices.requestSendByRider(req.body, riderId);
-  console.log(ride, "vira");
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -21,6 +21,7 @@ const requestSendByRider = CatchAsync(async (req: Request, res: Response) => {
 const cancelRequestByRider = CatchAsync(async (req: Request, res: Response) => {
   const rider = req.user as JwtPayload;
   const rideId = req.params.id;
+  console.log(rideId, "con-can-3");
   const ride = await RideServices.cancelRequestByRider(rider.userId, rideId);
   console.log(ride, "cont-26");
   sendResponse(res, {

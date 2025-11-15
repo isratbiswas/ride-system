@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
-import { AvailabilityStatus, DriverStatus, IDriver } from "./driver.interface";
-import { IsActive } from "../user/user.interface";
+import { DriverStatus, IDriver } from "./driver.interface";
+import { AvailabilityStatus, IsActive } from "../user/user.interface";
 
 const completedRideSchema = new Schema(
   {

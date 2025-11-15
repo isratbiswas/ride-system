@@ -5,6 +5,8 @@ import httpStatus from "http-status-codes";
 import sendResponse from "../../utils/sendResponce";
 import { DriverServices } from "./driver.service";
 import { RideStatus } from "../ride/ride.initerface";
+import AppError from "../../errorHelpers/AppError";
+import { AvailabilityStatus } from "../user/user.interface";
 
 const acceptRide = CatchAsync(async (req: Request, res: Response) => {
   const driverId = (req.user as JwtPayload).userId;
@@ -85,8 +87,10 @@ const viewEarnings = CatchAsync(async (req: Request, res: Response) => {
 
 const getDriverProfile = async (req: Request, res: Response) => {
   try {
-    const driverId = req.params.id;
-    const driver = await DriverServices.getDriverProfileService(driverId);
+    const driverId = req.user as JwtPayload;
+    const driver = await DriverServices.getDriverProfileService(
+      driverId.userId
+    );
 
     res.status(200).json({
       message: "Driver profile fetched successfully",
@@ -99,18 +103,19 @@ const getDriverProfile = async (req: Request, res: Response) => {
 
 // Driver set availityStatus
 const setAvailability = CatchAsync(async (req: Request, res: Response) => {
-  const driverId = (req.user as JwtPayload).userId;
-  const { availabilityStatus } = req.body;
-  const driver = await DriverServices.setAvailability(
-    driverId,
+  const driver = req.user as JwtPayload; // get driverId from JWT
+  const { availabilityStatus } = req.body; // { availabilityStatus: "ONLINE" }
+
+  const updatedDriver = await DriverServices.setAvailability(
+    driver.userId,
     availabilityStatus
   );
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: " Driver can set availability easily",
-    data: driver,
+    message: `Driver is now ${availabilityStatus}`,
+    data: updatedDriver,
   });
 });
 

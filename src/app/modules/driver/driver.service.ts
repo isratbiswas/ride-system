@@ -1,8 +1,9 @@
 import AppError from "../../errorHelpers/AppError";
 import { RideStatus } from "../ride/ride.initerface";
 import { Ride } from "../ride/ride.model";
+import { AvailabilityStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
-import { AvailabilityStatus, DriverStatus, IDriver } from "./driver.interface";
+import { DriverStatus, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 
 const acceptRide = async (
@@ -82,10 +83,9 @@ const updateStatus = async (
 // services/driver.service.ts
 
 const getDriverProfileService = async (driverId: string) => {
-  const driver = await Ride.find({ driverId });
-
+  const driver = await Driver.find({ driverId });
   if (!driver) throw new AppError(400, "Driver not found");
-  const totalRides = await Ride.countDocuments();
+  const totalRides = await Ride.countDocuments({ driverId });
   console.log(driver, "serv-43");
   return {
     driver,
@@ -147,13 +147,17 @@ const setAvailability = async (
   driverId: string,
   availabilityStatus: AvailabilityStatus
 ) => {
-  const updateDriver = await Driver.findOneAndUpdate(
-    { _id: driverId },
-    { availabilityStatus },
-    { new: true }
-  );
+  const driver = await User.findById(driverId);
+  if (!driver) {
+    throw new Error("Driver not found");
+  }
 
-  return updateDriver;
+  driver.availabilityStatus = availabilityStatus;
+
+  // Optional: store history if you want
+
+  await driver.save();
+  return driver;
 };
 
 // driver request for approve

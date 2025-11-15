@@ -1,19 +1,16 @@
 import { Types } from "mongoose";
-import { IsActive } from "../user/user.interface";
+import { AvailabilityStatus, IsActive } from "../user/user.interface";
 export interface ICompletedRide {
   fare: number;
   ride: Types.ObjectId | string; // Ride reference
   completedAt: Date;
 }
-export enum AvailabilityStatus {
-  ONLINE = "ONLINE",
-  OFFLINE = "OFFLINE",
-}
+
 export enum DriverStatus {
   none = "none",
   pending = "pending",
   approved = "approved",
-  rejected = "rejected",
+  suspend = "suspend",
 }
 
 export interface IDriver {

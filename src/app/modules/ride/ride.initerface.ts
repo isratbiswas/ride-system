@@ -31,7 +31,6 @@ export interface IRide extends Document {
   status: RideStatus;
   history: IRideHistory[];
   fare: number;
-  driverPayout?: number;
   createdAt: Date;
   updatedAt: Date;
   completedAt: Date;

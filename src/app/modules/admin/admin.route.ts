@@ -10,21 +10,32 @@ router.get(
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   AdminController.getPendingDrivers
 );
+
+router.get(
+  "/analytics/overview",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  AdminController.analyticsOverview
+);
 router.patch(
   "/approve/:id",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   AdminController.approveDriver
 );
 router.patch(
-  "/reject/:id",
+  "/suspend/:id",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-  AdminController.rejectDriver
+  AdminController.suspendDriver
 );
 
 router.patch(
   "/block/:id",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   AdminController.blockUser
+);
+router.patch(
+  "/unblock/:id",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  AdminController.unblockUser
 );
 
 export const AdminRoutes = router;

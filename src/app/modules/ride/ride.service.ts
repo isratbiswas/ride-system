@@ -17,7 +17,9 @@ const requestSendByRider = async (payload: Partial<IRide>, riderId: string) => {
 
 //  Rider  cancel a ride
 const cancelRequestByRider = async (userId: string, rideId: string) => {
+  console.log(rideId, "can-2");
   const ride = await Ride.findById(rideId);
+  console.log(ride, "cna-1");
   if (!ride) {
     throw new Error("Ride not Found");
   }
@@ -27,7 +29,13 @@ const cancelRequestByRider = async (userId: string, rideId: string) => {
   if (ride.status === RideStatus.cancelled) {
     throw new Error("Ride already cancelled");
   }
-
+  // Important extra validations
+  if (ride.status === RideStatus.in_transit) {
+    throw new Error("Cannot cancel an ongoing ride");
+  }
+  if (ride.status === RideStatus.completed) {
+    throw new Error("Ride already completed");
+  }
   ride.status = RideStatus.cancelled;
   ride.history.push({
     status: RideStatus.cancelled,
@@ -42,8 +50,7 @@ const cancelRequestByRider = async (userId: string, rideId: string) => {
 
 const getMyRides = async (riderId: string | ObjectId) => {
   const rides = await Ride.find({ riderId }).populate("driverId", "name email");
-  const totalRides = await Ride.countDocuments();
-  console.log(rides, "serv-43");
+  const totalRides = await Ride.countDocuments({ riderId });
   return {
     rides,
     meta: {
