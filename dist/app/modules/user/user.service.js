@@ -32,7 +32,10 @@ const env_1 = require("../../config/env");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const driver_model_1 = require("../driver/driver.model");
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password, role } = payload, rest = __rest(payload, ["email", "password", "role"]);
+    const { email, password, role, phone } = payload, rest = __rest(payload, ["email", "password", "role", "phone"]);
+    if (!email || !password) {
+        throw new Error("Email and password are required");
+    }
     const isUserExist = yield user_model_1.User.findOne({ email });
     if (isUserExist) {
         throw new Error("user already exist");
@@ -43,7 +46,7 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         provider: "credentials",
         providerId: email,
     };
-    const user = yield user_model_1.User.create(Object.assign({ email, password: hashedPassword, role: validRole, auths: [authProvider] }, rest));
+    const user = yield user_model_1.User.create(Object.assign({ email, password: hashedPassword, role: validRole, auths: [authProvider], phone }, rest));
     if (role === user_interface_1.Role.DRIVER) {
         yield driver_model_1.Driver.create(Object.assign(Object.assign({ driverId: user._id }, payload), rest));
     }
@@ -75,24 +78,71 @@ const updateUser = (userId, payload, decodedToken) => __awaiter(void 0, void 0, 
     return newUpdatedUser;
 });
 const getme = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findById(userId).select("-password");
+    const user = yield user_model_1.User.findById(userId);
     return {
         data: user,
     };
 });
-const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield user_model_1.User.find();
-    const totalUsers = yield user_model_1.User.countDocuments();
+const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const { q, role, blocked, startDate, endDate, sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 20, } = query;
+    const filter = {};
+    //  Search (by name or email)
+    if (q) {
+        filter.$or = [
+            { name: { $regex: q, $options: "i" } },
+            { email: { $regex: q, $options: "i" } },
+        ];
+    }
+    //  Filter by role
+    if (role)
+        filter.role = role;
+    //  Filter by blocked status
+    if (typeof blocked !== "undefined") {
+        filter.blocked = blocked === "true";
+    }
+    //  Filter by date range
+    if (startDate || endDate) {
+        filter.createdAt = {};
+        if (startDate)
+            filter.createdAt.$gte = new Date(startDate);
+        if (endDate)
+            filter.createdAt.$lte = new Date(endDate);
+    }
+    // 📄 Pagination setup
+    const pageNumber = Math.max(Number(page), 1); // minimum page = 1
+    const limitNumber = Math.min(Math.max(Number(limit), 1), 50); // min 1, max 50
+    const skip = (pageNumber - 1) * limitNumber;
+    // ↕️ Sorting setup
+    const sort = {
+        [sortBy]: sortOrder === "asc" ? 1 : -1,
+    };
+    // 🚀 Execute queries in parallel
+    const [users, totalUsers] = yield Promise.all([
+        user_model_1.User.find(filter).skip(skip).limit(limitNumber).sort(sort),
+        user_model_1.User.countDocuments(filter),
+    ]);
     return {
         data: users,
         meta: {
             total: totalUsers,
+            page: pageNumber,
+            limit: limitNumber,
+            totalPages: Math.ceil(totalUsers / limitNumber),
         },
     };
+});
+const updateProfile = (userId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    if (payload.password) {
+        const hashedPassword = yield bcryptjs_1.default.hash(payload.password, Number(env_1.envVars.BCRYPT_SALT_ROUND));
+        payload.password = hashedPassword;
+    }
+    const profile = yield user_model_1.User.findByIdAndUpdate(userId, { $set: payload }, { new: true, runValidators: true }).select("-password");
+    return profile;
 });
 exports.UserServices = {
     createUser,
     updateUser,
     getAllUsers,
     getme,
+    updateProfile,
 };

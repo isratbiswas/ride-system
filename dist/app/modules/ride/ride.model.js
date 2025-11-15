@@ -18,6 +18,12 @@ const rideSchema = new mongoose_1.Schema({
             lng: Number,
         },
     },
+    name: {
+        type: String,
+    },
+    email: {
+        type: String,
+    },
     destination: {
         address: String,
         coords: {
@@ -35,7 +41,6 @@ const rideSchema = new mongoose_1.Schema({
         default: [],
     },
     fare: { type: Number, default: 0 },
-    driverPayout: { type: Number, default: 0 },
     completedAt: { type: Date },
 }, {
     timestamps: true,

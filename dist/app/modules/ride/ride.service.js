@@ -19,7 +19,9 @@ const requestSendByRider = (payload, riderId) => __awaiter(void 0, void 0, void 
 });
 //  Rider  cancel a ride
 const cancelRequestByRider = (userId, rideId) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(rideId, "can-2");
     const ride = yield ride_model_1.Ride.findById(rideId);
+    console.log(ride, "cna-1");
     if (!ride) {
         throw new Error("Ride not Found");
     }
@@ -28,6 +30,13 @@ const cancelRequestByRider = (userId, rideId) => __awaiter(void 0, void 0, void 
     }
     if (ride.status === ride_initerface_1.RideStatus.cancelled) {
         throw new Error("Ride already cancelled");
+    }
+    // Important extra validations
+    if (ride.status === ride_initerface_1.RideStatus.in_transit) {
+        throw new Error("Cannot cancel an ongoing ride");
+    }
+    if (ride.status === ride_initerface_1.RideStatus.completed) {
+        throw new Error("Ride already completed");
     }
     ride.status = ride_initerface_1.RideStatus.cancelled;
     ride.history.push({
@@ -41,8 +50,7 @@ const cancelRequestByRider = (userId, rideId) => __awaiter(void 0, void 0, void 
 // Rider get all rider herself
 const getMyRides = (riderId) => __awaiter(void 0, void 0, void 0, function* () {
     const rides = yield ride_model_1.Ride.find({ riderId }).populate("driverId", "name email");
-    const totalRides = yield ride_model_1.Ride.countDocuments();
-    console.log(rides, "serv-43");
+    const totalRides = yield ride_model_1.Ride.countDocuments({ riderId });
     return {
         rides,
         meta: {
@@ -50,25 +58,8 @@ const getMyRides = (riderId) => __awaiter(void 0, void 0, void 0, function* () {
         },
     };
 });
-const completedRide = (rideId, driverId) => __awaiter(void 0, void 0, void 0, function* () {
-    // const ride = await Ride.findById(rideId);
-    // if (!ride) {
-    //   return res.status(404).json({ success: false, message: "Ride not found" });
-    // }
-    // ride.status = RideStatus.completed;
-    // ride.completedAt = new Date();
-    // await ride.save();
-    // //Find driver document
-    // const driver = await Ride.findOne({ driverId });
-    // if (!driver) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, message: "Driver profile not found" });
-    // }
-});
 exports.RideServices = {
     requestSendByRider,
     cancelRequestByRider,
     getMyRides,
-    completedRide,
 };

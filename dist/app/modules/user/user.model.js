@@ -20,6 +20,11 @@ const userSchema = new mongoose_1.Schema({
         enum: Object.values(user_interface_1.Role),
         default: user_interface_1.Role.RIDER,
     },
+    availabilityStatus: {
+        type: String,
+        enum: Object.values(user_interface_1.AvailabilityStatus),
+        default: user_interface_1.AvailabilityStatus.OFFLINE,
+    },
     approve: { type: Boolean, default: false },
     isActive: {
         type: String,

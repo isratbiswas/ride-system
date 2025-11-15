@@ -18,6 +18,7 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const CatchAsync_1 = require("../../utils/CatchAsync");
 // import { sendResponse } from "../../utils/sendResponce";
 const sendResponce_1 = __importDefault(require("../../utils/sendResponce"));
+const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const createUser = (0, CatchAsync_1.CatchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_service_1.UserServices.createUser(req.body);
     (0, sendResponce_1.default)(res, {
@@ -49,9 +50,22 @@ const getme = (0, CatchAsync_1.CatchAsync)((req, res, next) => __awaiter(void 0,
         data: result.data,
     });
 }));
+const updateProfile = (0, CatchAsync_1.CatchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user.userId;
+    if (!userId) {
+        throw new AppError_1.default(400, "User not found");
+    }
+    const profile = yield user_service_1.UserServices.updateProfile(userId, req.body);
+    (0, sendResponce_1.default)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.CREATED,
+        message: "user profile updated successfully",
+        data: profile,
+    });
+}));
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAllUsers = (0, CatchAsync_1.CatchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserServices.getAllUsers();
+    const result = yield user_service_1.UserServices.getAllUsers(req.query);
     (0, sendResponce_1.default)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,
@@ -65,4 +79,5 @@ exports.UserControllers = {
     updateUser,
     getAllUsers,
     getme,
+    updateProfile,
 };

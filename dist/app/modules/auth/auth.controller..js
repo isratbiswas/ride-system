@@ -17,9 +17,11 @@ const auth_service_1 = require("./auth.service");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const CatchAsync_1 = require("../../utils/CatchAsync");
 const sendResponce_1 = __importDefault(require("../../utils/sendResponce"));
+const setCookies_1 = require("../../utils/setCookies");
 const credentialsLogin = (0, CatchAsync_1.CatchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const loginInfo = yield auth_service_1.AuthServices.credentialsLogin(req.body);
     console.log(loginInfo);
+    (0, setCookies_1.setAuthCookie)(res, { accessToken: loginInfo.accessToken });
     (0, sendResponce_1.default)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,

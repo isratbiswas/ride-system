@@ -20,7 +20,6 @@ const sendResponce_1 = __importDefault(require("../../utils/sendResponce"));
 const requestSendByRider = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const riderId = req.user.userId;
     const ride = yield ride_service_1.RideServices.requestSendByRider(req.body, riderId);
-    console.log(ride, "vira");
     (0, sendResponce_1.default)(res, {
         success: true,
         statusCode: http_status_codes_1.default.CREATED,
@@ -31,6 +30,7 @@ const requestSendByRider = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(
 const cancelRequestByRider = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const rider = req.user;
     const rideId = req.params.id;
+    console.log(rideId, "con-can-3");
     const ride = yield ride_service_1.RideServices.cancelRequestByRider(rider.userId, rideId);
     console.log(ride, "cont-26");
     (0, sendResponce_1.default)(res, {
@@ -50,20 +50,8 @@ const getMyRides = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, 
         data: rides,
     });
 }));
-const completedRide = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const rideId = req.params.id;
-    const driverId = req.user.userId;
-    const ride = yield ride_service_1.RideServices.completedRide(rideId, driverId);
-    (0, sendResponce_1.default)(res, {
-        success: true,
-        statusCode: http_status_codes_1.default.OK,
-        message: "Ride completed successfully",
-        data: ride,
-    });
-}));
 exports.RideController = {
     requestSendByRider,
     cancelRequestByRider,
     getMyRides,
-    completedRide,
 };

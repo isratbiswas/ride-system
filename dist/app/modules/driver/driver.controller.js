@@ -71,22 +71,22 @@ const updateStatus = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0
     });
 }));
 // driver view earnings
-// const viewEarnings = CatchAsync(async (req: Request, res: Response) => {
-//   const driverId = (req.user as JwtPayload).userId;
-//   console.log(driverId, "dlfdj");
-//   const earnings = await DriverServices.viewEarnings(driverId);
-//   console.log(earnings, "lllll");
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     message: "Driver earnings retrieved successfully",
-//     data: earnings,
-//   });
-// });
+const viewEarnings = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.user.userId;
+    console.log(driverId, "dlfdj");
+    const earnings = yield driver_service_1.DriverServices.viewEarnings(driverId);
+    console.log(earnings, "lllll");
+    (0, sendResponce_1.default)(res, {
+        success: true,
+        statusCode: http_status_codes_1.default.OK,
+        message: "Driver earnings retrieved successfully",
+        data: { earnings: earnings },
+    });
+}));
 const getDriverProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const driverId = req.params.id;
-        const driver = yield driver_service_1.DriverServices.getDriverProfileService(driverId);
+        const driverId = req.user;
+        const driver = yield driver_service_1.DriverServices.getDriverProfileService(driverId.userId);
         res.status(200).json({
             message: "Driver profile fetched successfully",
             driver,
@@ -98,34 +98,26 @@ const getDriverProfile = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 // Driver set availityStatus
 const setAvailability = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const driverId = req.user.userId;
-    const { availabilityStatus } = req.body;
-    const driver = yield driver_service_1.DriverServices.setAvailability(driverId, availabilityStatus);
+    const driver = req.user; // get driverId from JWT
+    const { availabilityStatus } = req.body; // { availabilityStatus: "ONLINE" }
+    const updatedDriver = yield driver_service_1.DriverServices.setAvailability(driver.userId, availabilityStatus);
     (0, sendResponce_1.default)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,
-        message: " Driver can set availability easily",
-        data: driver,
+        message: `Driver is now ${availabilityStatus}`,
+        data: updatedDriver,
     });
 }));
-const completeRide = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const driverId = req.user.userId;
-        const rideId = req.params.id;
-        console.log(rideId, "midffd");
-        const { status } = req.body;
-        const rides = yield driver_service_1.DriverServices.completeRideService(driverId, rideId, status);
-        res.status(200).json({
-            message: "Ride completed successfully",
-            rides,
-        });
-    }
-    catch (err) {
-        res.status(500).json({
-            message: err.message || "Failed to complete ride",
-        });
-    }
-});
+const completeRide = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const driverId = req.user.userId;
+    const rideId = req.params.id;
+    console.log(rideId, "midffd");
+    const rides = yield driver_service_1.DriverServices.completeRideService(driverId, rideId);
+    res.status(200).json({
+        message: "Ride completed successfully",
+        rides,
+    });
+}));
 const requestForApprove = (0, CatchAsync_1.CatchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const driverId = req.user.userId;
     const result = yield driver_service_1.DriverServices.requestForApprove(driverId);
@@ -144,5 +136,5 @@ exports.DriverController = {
     getDriverProfile,
     completeRide,
     requestForApprove,
-    // viewEarnings,
+    viewEarnings,
 };

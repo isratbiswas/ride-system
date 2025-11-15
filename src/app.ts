@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { router } from "./app/routes";
+import { envVars } from "./app/config/env";
 
 const app = express();
 
@@ -11,10 +12,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://rider-system.vercel.app",
-];
+const allowedOrigins = ["http://localhost:5173", envVars.FRONTEND_URL];
 
 app.use(
   cors({

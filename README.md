@@ -53,37 +53,47 @@
 
 ## **📜 API Endpoints**
 
+https://assignment-5-rider-system.vercel.app/api/v1
+
 ### **Auth**
 
 | Method | Endpoint       | Description                              |
 | ------ | -------------- | ---------------------------------------- |
-| POST   | /auth/register | Register a new user (rider/driver/admin) |
+| POST   | /user/register | Register a new user (rider/driver/admin) |
 | POST   | /auth/login    | Login and receive JWT token              |
 
 ### **Rides (Rider)**
 
 | Method | Endpoint          | Description               |
 | ------ | ----------------- | ------------------------- |
-| POST   | /rides/request    | Request a new ride        |
-| PATCH  | /rides/:id/cancel | Cancel a ride             |
-| GET    | /rides/me         | View rider's ride history |
+| POST   | /rider/request    | Request a new ride        |
+| PATCH  | /rider/cancel/:id | Cancel a ride             |
+| GET    | /ride/me          | View rider's ride history |
 
 ### **Rides (Driver)**
 
-| Method | Endpoint          | Description                                         |
-| ------ | ----------------- | --------------------------------------------------- |
-| PATCH  | /rides/:id/accept | Accept a ride request                               |
-| PATCH  | /rides/:id/status | Update ride status (picked_up/in_transit/completed) |
-| GET    | /rides/me         | View driver's ride history & earnings               |
+| Method | Endpoint               | Description                           |
+| ------ | ---------------------- | ------------------------------------- |
+| POST   | /driver/accept/:id     | Accept a ride request                 |
+| GET    | /driver/me             | View driver's ride history & earnings |
+| GET    | /driver/earnings       | View driver's earnings                |
+| POST   | /driver/approveRequest |                                       |
+| PATCH  | /driver/reject/:id     |                                       |
+| PATCH  | /driver/status/:id     |                                       |
+| PATCH  | /driver/completed/:id  |                                       |
+| PATCH  | /driver/availability   |                                       |
 
 ### **Admin**
 
-| Method | Endpoint             | Description              |
-| ------ | -------------------- | ------------------------ |
-| GET    | /users               | View all users           |
-| PATCH  | /drivers/approve/:id | Approve/suspend a driver |
-| PATCH  | /users/block/:id     | Block/unblock a user     |
-| GET    | /rides               | View all ride records    |
+| Method | Endpoint                          | Description              |
+| ------ | --------------------------------- | ------------------------ |
+| GET    | /user/all-user                    | View all users           |
+| GET    | /admin/analytics/overview         |
+| PATCH  | /admin/approve/:id                |                          |
+| PATCH  | /admin/block/:id                  | Block a user             |
+| PATCH  | /admin/unblock/:id unblock a user |
+| PATCH  | /admin/suspend/:id                | Approve/suspend a driver |
+| GET    | /admin/pending                    |
 
 ---
 
