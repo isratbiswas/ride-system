@@ -21,11 +21,14 @@ const credentialsLogin = CatchAsync(
 
 const logout = CatchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log("logout");
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+    console.log("logout1");
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,

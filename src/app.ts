@@ -1,32 +1,21 @@
-import express, { type Request, type Response } from "express";
-import notFound from "./app/middlewares/notFound";
-import cors from "cors";
 import cookieParser from "cookie-parser";
-import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
-import { router } from "./app/routes";
+import cors from "cors";
+import express, { Request, Response } from "express";
 import { envVars } from "./app/config/env";
+import { router } from "./app/routes";
+import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
+import notFound from "./app/middlewares/notFound";
 
 const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
-
-const allowedOrigins = ["http://localhost:5173", envVars.FRONTEND_URL];
-
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS policy: origin ${origin} not allowed`));
-      }
-    },
-    credentials: true, // for cookies or authentication
+    origin: envVars.FRONTEND_URL,
+    credentials: true,
   })
 );
 
@@ -34,11 +23,12 @@ app.use("/api/v1", router);
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
-    message: "welcome to our ride system",
+    message: "Welcome to Tour Management System Backend",
   });
 });
 
-app.use(notFound);
 app.use(globalErrorHandler);
+
+app.use(notFound);
 
 export default app;
