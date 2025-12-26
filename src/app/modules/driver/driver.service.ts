@@ -6,35 +6,43 @@ import { User } from "../user/user.model";
 import { DriverStatus, IDriver } from "./driver.interface";
 import { Driver } from "./driver.model";
 
-const acceptRide = async (
-  // payload: Partial<IDriver>,
-  driverId: string,
-  rideId: string
-) => {
-  console.log(driverId, rideId, "dser-10");
-  const ride = await Ride.findByIdAndUpdate(
-    rideId,
-    {
-      driverId: driverId,
-    },
-    { new: true }
-  );
-  console.log(ride, "dser-11");
-  if (!ride) {
-    throw new AppError(400, "Ride Not Found");
-  }
-  if (ride.status !== RideStatus.requested) {
-    throw new AppError(401, "Ride already taken");
-  }
-  ride.status = RideStatus.accepted;
-  ride.history.push({
-    status: RideStatus.accepted,
-    at: new Date(),
-    by: driverId,
-  });
-  await ride.save();
-  return ride;
+const getRequest = async () => {
+  const result = await Ride.find({
+    status: "requested",
+  }).populate("riderId", "name email pickup destination fare ");
+  console.log(result, "getRequest");
+  return result;
 };
+
+// const acceptRide = async (
+//   // payload: Partial<IDriver>,
+//   driverId: string,
+//   rideId: string
+// ) => {
+//   console.log(driverId, rideId, "dser-10");
+//   const ride = await Ride.findByIdAndUpdate(
+//     rideId,
+//     {
+//       driverId: driverId,
+//     },
+//     { new: true }
+//   );
+//   console.log(ride, "dser-11");
+//   if (!ride) {
+//     throw new AppError(400, "Ride Not Found");
+//   }
+//   if (ride.status !== RideStatus.requested) {
+//     throw new AppError(401, "Ride already taken");
+//   }
+//   ride.status = RideStatus.accepted;
+//   ride.history.push({
+//     status: RideStatus.accepted,
+//     at: new Date(),
+//     by: driverId,
+//   });
+//   await ride.save();
+//   return ride;
+// };
 
 // Driver reject ride
 const cancelRide = async (rideId: string, driverId: string) => {
@@ -49,6 +57,25 @@ const cancelRide = async (rideId: string, driverId: string) => {
   ride.status = RideStatus.cancelled;
   ride.history.push({
     status: RideStatus.cancelled,
+    at: new Date(),
+    by: driverId,
+  });
+
+  await ride.save({ validateBeforeSave: false });
+  return ride;
+};
+const acceptRide = async (rideId: string, driverId: string) => {
+  const ride = await Ride.findById(rideId);
+  if (!ride) throw new AppError(404, "Ride not found");
+
+  // Only rides that are still "requested" can be cancelled
+  if (ride.status !== RideStatus.requested) {
+    throw new AppError(400, "Ride already processed");
+  }
+
+  ride.status = RideStatus.accepted;
+  ride.history.push({
+    status: RideStatus.accepted,
     at: new Date(),
     by: driverId,
   });
@@ -82,14 +109,18 @@ const updateStatus = async (
 
 // services/driver.service.ts
 
-const getDriverProfileService = async (driverId: string) => {
-  const driver = await Driver.find({ driverId });
+const getDriverProfile = async (driverId: string) => {
+  const driver = await Driver.find({ driverId }).populate(
+    "riderId",
+    "name email pickup destination fare"
+  );
   if (!driver) throw new AppError(400, "Driver not found");
   const totalRides = await Ride.countDocuments({ driverId });
   console.log(driver, "serv-43");
   return {
     driver,
     meta: {
+      
       total: totalRides,
     },
   };
@@ -174,11 +205,12 @@ const requestForApprove = async (driverId: string) => {
   return { driver, message: "Approval request sent to admin" };
 };
 export const DriverServices = {
+  getRequest,
   acceptRide,
   cancelRide,
   updateStatus,
   setAvailability,
-  getDriverProfileService,
+  getDriverProfile,
   completeRideService,
   requestForApprove,
   viewEarnings,

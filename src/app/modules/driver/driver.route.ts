@@ -6,6 +6,7 @@ import { DriverController } from "./driver.controller";
 const router = Router();
 
 router.get("/me", checkAuth(Role.DRIVER), DriverController.getDriverProfile);
+router.get("/getRequest", checkAuth(Role.DRIVER), DriverController.getRequest);
 router.post(
   "/approveRequest",
   checkAuth(Role.DRIVER),
@@ -16,7 +17,8 @@ router.patch(
   checkAuth(Role.DRIVER),
   DriverController.completeRide
 );
-router.post("/accept/:id", checkAuth(Role.DRIVER), DriverController.acceptRide);
+
+router.patch("/accepted/:id", DriverController.acceptRide);
 router.patch(
   "/reject/:id",
   checkAuth(Role.DRIVER),

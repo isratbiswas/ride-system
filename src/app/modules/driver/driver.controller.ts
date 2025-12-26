@@ -8,6 +8,17 @@ import { RideStatus } from "../ride/ride.initerface";
 import AppError from "../../errorHelpers/AppError";
 import { AvailabilityStatus } from "../user/user.interface";
 
+const getRequest = CatchAsync(async (req: Request, res: Response) => {
+  const result = await DriverServices.getRequest();
+  console.log(result, "request-1");
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "All Ride Request is retreieved",
+    data: result,
+  });
+});
+
 const acceptRide = CatchAsync(async (req: Request, res: Response) => {
   const driverId = (req.user as JwtPayload).userId;
   console.log(driverId, "dcon-10");
@@ -85,21 +96,21 @@ const viewEarnings = CatchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getDriverProfile = async (req: Request, res: Response) => {
-  try {
-    const driverId = req.user as JwtPayload;
-    const driver = await DriverServices.getDriverProfileService(
-      driverId.userId
-    );
+// const getDriverProfile = async (req: Request, res: Response) => {
+//   try {
+//     const driverId = req.user as JwtPayload;
+//     const driver = await DriverServices.getDriverProfileService(
+//       driverId.userId
+//     );
 
-    res.status(200).json({
-      message: "Driver profile fetched successfully",
-      driver,
-    });
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//     res.status(200).json({
+//       message: "Driver profile fetched successfully",
+//       driver,
+//     });
+//   } catch (err: any) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 
 // Driver set availityStatus
 const setAvailability = CatchAsync(async (req: Request, res: Response) => {
@@ -143,7 +154,19 @@ const requestForApprove = CatchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getDriverProfile = CatchAsync(async (req: Request, res: Response) => {
+  const driver = req.user as JwtPayload;
+  const rides = await DriverServices.getDriverProfile(driver.userId);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "My Ride Retrieved Successfully",
+    data: rides,
+  });
+});
+
 export const DriverController = {
+  getRequest,
   acceptRide,
   updateStatus,
   cancelRide,
