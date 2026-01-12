@@ -3,6 +3,7 @@ import http from "http";
 import { envVars } from "./app/config/env";
 import app from "./app";
 import { Server } from "socket.io";
+import { initSocket } from "./socket";
 
 let server = http.createServer(app);
 const io = new Server(server, {
