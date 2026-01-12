@@ -30,11 +30,14 @@ const credentialsLogin = (0, CatchAsync_1.CatchAsync)((req, res, next) => __awai
     });
 }));
 const logout = (0, CatchAsync_1.CatchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("logout");
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+    console.log("logout1");
     (0, sendResponce_1.default)(res, {
         success: true,
         statusCode: http_status_codes_1.default.OK,

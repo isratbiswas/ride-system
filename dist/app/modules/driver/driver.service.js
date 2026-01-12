@@ -19,29 +19,42 @@ const ride_model_1 = require("../ride/ride.model");
 const user_model_1 = require("../user/user.model");
 const driver_interface_1 = require("./driver.interface");
 const driver_model_1 = require("./driver.model");
-const acceptRide = (
-// payload: Partial<IDriver>,
-driverId, rideId) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(driverId, rideId, "dser-10");
-    const ride = yield ride_model_1.Ride.findByIdAndUpdate(rideId, {
-        driverId: driverId,
-    }, { new: true });
-    console.log(ride, "dser-11");
-    if (!ride) {
-        throw new AppError_1.default(400, "Ride Not Found");
-    }
-    if (ride.status !== ride_initerface_1.RideStatus.requested) {
-        throw new AppError_1.default(401, "Ride already taken");
-    }
-    ride.status = ride_initerface_1.RideStatus.accepted;
-    ride.history.push({
-        status: ride_initerface_1.RideStatus.accepted,
-        at: new Date(),
-        by: driverId,
-    });
-    yield ride.save();
-    return ride;
+const getRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield ride_model_1.Ride.find({
+        status: "requested",
+    }).populate("riderId", "name email pickup destination fare ");
+    console.log(result, "getRequest");
+    return result;
 });
+// const acceptRide = async (
+//   // payload: Partial<IDriver>,
+//   driverId: string,
+//   rideId: string
+// ) => {
+//   console.log(driverId, rideId, "dser-10");
+//   const ride = await Ride.findByIdAndUpdate(
+//     rideId,
+//     {
+//       driverId: driverId,
+//     },
+//     { new: true }
+//   );
+//   console.log(ride, "dser-11");
+//   if (!ride) {
+//     throw new AppError(400, "Ride Not Found");
+//   }
+//   if (ride.status !== RideStatus.requested) {
+//     throw new AppError(401, "Ride already taken");
+//   }
+//   ride.status = RideStatus.accepted;
+//   ride.history.push({
+//     status: RideStatus.accepted,
+//     at: new Date(),
+//     by: driverId,
+//   });
+//   await ride.save();
+//   return ride;
+// };
 // Driver reject ride
 const cancelRide = (rideId, driverId) => __awaiter(void 0, void 0, void 0, function* () {
     const ride = yield ride_model_1.Ride.findById(rideId);
@@ -54,6 +67,23 @@ const cancelRide = (rideId, driverId) => __awaiter(void 0, void 0, void 0, funct
     ride.status = ride_initerface_1.RideStatus.cancelled;
     ride.history.push({
         status: ride_initerface_1.RideStatus.cancelled,
+        at: new Date(),
+        by: driverId,
+    });
+    yield ride.save({ validateBeforeSave: false });
+    return ride;
+});
+const acceptRide = (rideId, driverId) => __awaiter(void 0, void 0, void 0, function* () {
+    const ride = yield ride_model_1.Ride.findById(rideId);
+    if (!ride)
+        throw new AppError_1.default(404, "Ride not found");
+    // Only rides that are still "requested" can be cancelled
+    if (ride.status !== ride_initerface_1.RideStatus.requested) {
+        throw new AppError_1.default(400, "Ride already processed");
+    }
+    ride.status = ride_initerface_1.RideStatus.accepted;
+    ride.history.push({
+        status: ride_initerface_1.RideStatus.accepted,
         at: new Date(),
         by: driverId,
     });
@@ -80,8 +110,8 @@ const updateStatus = (driverId, rideId, status) => __awaiter(void 0, void 0, voi
     return ride;
 });
 // services/driver.service.ts
-const getDriverProfileService = (driverId) => __awaiter(void 0, void 0, void 0, function* () {
-    const driver = yield driver_model_1.Driver.find({ driverId });
+const getDriverProfile = (driverId) => __awaiter(void 0, void 0, void 0, function* () {
+    const driver = yield driver_model_1.Driver.find({ driverId }).populate("riderId", "name email pickup destination fare");
     if (!driver)
         throw new AppError_1.default(400, "Driver not found");
     const totalRides = yield ride_model_1.Ride.countDocuments({ driverId });
@@ -157,11 +187,12 @@ const requestForApprove = (driverId) => __awaiter(void 0, void 0, void 0, functi
     return { driver, message: "Approval request sent to admin" };
 });
 exports.DriverServices = {
+    getRequest,
     acceptRide,
     cancelRide,
     updateStatus,
     setAvailability,
-    getDriverProfileService,
+    getDriverProfile,
     completeRideService,
     requestForApprove,
     viewEarnings,

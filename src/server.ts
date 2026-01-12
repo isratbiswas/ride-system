@@ -1,9 +1,17 @@
-import { Server } from "http";
 import mongoose from "mongoose";
+import http from "http";
 import { envVars } from "./app/config/env";
 import app from "./app";
+import { Server } from "socket.io";
 
-let server: Server;
+let server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+initSocket(io);
+
 const port = 5000;
 
 const startServer = async () => {
