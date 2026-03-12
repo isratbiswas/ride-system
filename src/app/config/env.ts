@@ -5,6 +5,7 @@ dotenv.config();
 interface EnvConfig {
   PORT: string;
   DB_URL: string;
+  OPEN_API_KEY: string;
   NODE_ENV: "development" | "production";
   BCRYPT_SALT_ROUND: string;
   SUPER_ADMIN_EMAIL: string;
@@ -19,6 +20,7 @@ const loadEnvVariables = (): EnvConfig => {
     "PORT",
     "DB_URL",
     "NODE_ENV",
+    "OPEN_API_KEY",
     "JWT_ACCESS_EXPIRES",
     "BCRYPT_SALT_ROUND",
     "JWT_ACCESS_SECRET",
@@ -36,6 +38,7 @@ const loadEnvVariables = (): EnvConfig => {
     PORT: process.env.PORT as string,
     DB_URL: process.env.DB_URL!,
     NODE_ENV: process.env.NODE_ENV as "development" | "production",
+    OPEN_API_KEY: process.env.OPEN_API_KEY as string,
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,
     JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES as string,
     BCRYPT_SALT_ROUND: process.env.BCRYPT as string,
